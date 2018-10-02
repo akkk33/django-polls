@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 from .models import Question, Choice
+from django.template import loader
 
 
 def index(request):
     latest_five = Question.objects.order_by("-publish_date")[:5]
-    output = ', '.join([q.question_text for q in latest_five])
-    return HttpResponse(output)
+    template = loader.get_template("polls/index.html")
+    context = {
+        'latest_five': latest_five,
+    }
+    return HttpResponse(template.render(context, request))
 
 
 def details(request, question_id):
