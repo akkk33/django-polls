@@ -1,6 +1,6 @@
-from django.http import HttpResponse
 from .models import Question, Choice
 from django.shortcuts import render
+from django.http import Http404
 
 
 def index(request):
@@ -12,13 +12,16 @@ def index(request):
 
 
 def details(request, question_id):
-    return HttpResponse("You're seeing question %s." % question_id)
+    try:
+        q = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        raise Http404("This question doesn't exist!")
+    return render(request, 'polls/details.html', {"question": q})
 
 
 def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+    return
 
 
 def votes(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
+    return
