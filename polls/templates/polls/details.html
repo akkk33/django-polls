@@ -1,8 +1,11 @@
-<p>Publisher name: <a>{{ question.publisher_name }}</a></p>
+<p>Publisher name: <b><a>{{ question.publisher_name }}</a></b></p>
 <p>Published on: {{question.publish_date}}</p>
 <h1>{{ question.question_text }}</h1>
-<ul>
-{% for choice in question.choice_set.all %}
-<li>{{choice.choice_text}}</li>
+<form action="{% url 'polls:votes' question.id %}" method="post">
+{% csrf_token %}
+{% for choice in question.choice_set.all  %}
+<input type="radio" name="choice" id="choice{{ choice.id }}" value="{{choice.id}}"
+<label for="choice{{choice.id}}">{{ choice.choice_text }}</label><br>
 {% endfor %}
-</ul>
+<input type="submit" value="Vote">
+</form>

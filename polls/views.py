@@ -1,24 +1,37 @@
-from .models import Question, Choice
 from django.shortcuts import render, get_object_or_404
-from django.http import Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.urls import reverse
+from django.views import generic
+
+from .models import Question, Choice
 
 
-def index(request):
-    latest_five = Question.objects.order_by("-publish_date")[:5]
-    context = {
-        'latest_five': latest_five,
-    }
-    return render(request, "polls/index.html", context)
+class IndexView(generic.ListView):
+    template_name = "polls/index.html"
+    context_object_name = "latest_five"
+
+    def get_queryset(self):
+        return Question.objects.order_by("-publish_date")[:5]
 
 
-def details(request, question_id):
-    q = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/details.html', {"question": q})
+class DetailsView(generic.DetailView):
+    model = Question
+    template_name = "polls/details.html"
 
 
-def results(request, question_id):
-    return
+class ResultsView(generic.DetailView):
+    model = Question
+    context_object_name = "q"
+    template_name = "polls/results.html"
 
 
 def votes(request, question_id):
-    return
+    q = get_object_or_404(Question, pk=question_id)
+    try:
+        choice = q.choice_set.get(pk=request.POST['choice'])
+    except (KeyError, choice.DoesNotExist):
+        raise Http404("You didn't select a choice!")
+    else:
+        choice.votes += 1
+        choice.save()
+        return HttpResponseRedirect(reverse("polls:results", args=(q.id,)))
