@@ -1,5 +1,6 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'polls/css/style.css' %}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% if latest_five %}
 <ul>
     {% for question in latest_five %}
@@ -9,3 +10,4 @@
 {% else %}
 <p>There are no recently polls, Come back later</p>
 {% endif %}
+<a href="{% url 'polls:index' %}">Home</a>
